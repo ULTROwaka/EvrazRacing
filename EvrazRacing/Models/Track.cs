@@ -18,7 +18,7 @@ namespace EvrazRacing.Models
         public event EventHandler OnRaceEnd;
         public readonly List<Car> LeaderBoard;
 
-        public Track(float distance, int interval)
+        public Track(float distance, uint interval)
         {
             Distance = distance;
             Delta = interval / 1000;

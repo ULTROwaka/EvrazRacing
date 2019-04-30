@@ -72,6 +72,10 @@ namespace EvrazRacing.Models
             BreakChance = breakChance;
             RepairTime = repairTime;
 
+            Passed = 0;
+            IsOnPitstop = false;
+            IsOnFinish = false;
+
             rand = new Random();
         }
 
