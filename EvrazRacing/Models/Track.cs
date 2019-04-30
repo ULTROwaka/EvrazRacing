@@ -14,7 +14,9 @@ namespace EvrazRacing.Models
         private float Delta;
         private List<Car> CarsOnTrack;
         private int FinishedCarsCount;
-        Timer RaceTimer;   
+        Timer RaceTimer;
+        public event EventHandler OnRaceEnd;
+        public readonly List<Car> LeaderBoard;
 
         public Track(float distance, int interval)
         {
@@ -25,6 +27,7 @@ namespace EvrazRacing.Models
             FinishedCarsCount = 0;
             RaceTimer = new Timer(interval);
             RaceTimer.Elapsed += new ElapsedEventHandler(RaceTimerTick);
+            LeaderBoard = new List<Car>();
         }
 
         private void RaceTimerTick(Object source, ElapsedEventArgs e)
@@ -33,6 +36,7 @@ namespace EvrazRacing.Models
             if (FinishedCarsCount >= CarsOnTrack.Count)
             {
                 RaceTimer.Enabled = false;
+                OnRaceEnd(this, new EventArgs());
             }
         }
 
@@ -47,6 +51,7 @@ namespace EvrazRacing.Models
                     {
                         FinishedCarsCount++;
                         car.IsOnFinish = true;
+                        LeaderBoard.Add(car);
                     }
                 }                         
             }       
@@ -55,7 +60,6 @@ namespace EvrazRacing.Models
         public void Start()
         {
             if (isStarted) return;
-       
             isStarted = true;
             RaceTimer.Enabled = true;
         }  
