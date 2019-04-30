@@ -71,6 +71,7 @@
     <Compile Include="Models\Automobile.cs" />
     <Compile Include="Models\Car.cs" />
     <Compile Include="Models\Motorcycle.cs" />
+    <Compile Include="Models\Track.cs" />
     <Compile Include="Models\Truck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
