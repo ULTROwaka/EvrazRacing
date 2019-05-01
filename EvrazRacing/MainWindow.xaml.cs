@@ -1,7 +1,9 @@
 ﻿using EvrazRacing.ViewModels;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,7 +26,8 @@ namespace EvrazRacing
         public MainWindow()
         {
             InitializeComponent();
-
+            RxApp.MainThreadScheduler = DispatcherScheduler.Current;
+            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
             this.DataContext = new RaceCreationViewModel();
         }
     }

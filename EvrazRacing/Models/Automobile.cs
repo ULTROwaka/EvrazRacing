@@ -8,7 +8,7 @@ namespace EvrazRacing.Models
 {
     class Automobile : Car
     {
-        uint PassangersCount;
+        public uint PassangersCount;
         protected Automobile(string name, float speed, uint breakChance, uint repairTime, uint passangersCount) : base(name, speed, breakChance, repairTime)
         {
             PassangersCount = passangersCount;

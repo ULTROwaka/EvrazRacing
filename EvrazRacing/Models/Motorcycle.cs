@@ -8,7 +8,7 @@ namespace EvrazRacing.Models
 {
     class Motorcycle : Car
     {
-        private bool Sidecar;
+        public bool Sidecar;
 
         protected Motorcycle(string name, float speed, uint breakChance, uint repairTime, bool sidecar) : base(name, speed, breakChance, repairTime)
         {

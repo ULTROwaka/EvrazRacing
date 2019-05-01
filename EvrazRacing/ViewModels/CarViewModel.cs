@@ -1,27 +1,42 @@
-﻿using ReactiveUI;
+﻿using EvrazRacing.Models;
+using ReactiveUI;
 namespace EvrazRacing.ViewModels
 {
     internal class CarViewModel : ReactiveObject
     {
+        private Car _carModel;
         private string _carName;
-        private string _carSpeed;
+        private float _carSpeed;
         private uint _repairTime;
         private string _carType;
         private float _weight;
         private uint _passangerCount;
         private bool _sidecar;
 
-        public CarViewModel(string carName, string carSpeed, uint repairTime, string carType, object specialize)
+        public CarViewModel(Car car)
         {
-            CarName = carName;
-            CarSpeed = carSpeed;
-            RepairTime = repairTime;
-            CarType = carType;
-            switch (carType)
+            _carModel = car;
+            _carName = _carModel.Name;
+            _carSpeed = _carModel.Speed;
+            _repairTime = _carModel.RepairTime;
+            
+            if (_carModel is Truck)
             {
-                case "Truck": _weight = (float)specialize; break;
-                case "Motorcycle": _sidecar = (bool)specialize; break;
-                case "Automobile": _passangerCount = (uint)specialize; break;
+                _weight = (_carModel as Truck).Weight;
+                _carType = "Truck";
+                return;
+            }
+            if (_carModel is Motorcycle)
+            {
+                _sidecar = (_carModel as Motorcycle).Sidecar;
+                _carType = "Motorcycle";
+                return;
+            }
+            if (_carModel is Automobile)
+            {
+                _passangerCount = (_carModel as Automobile).PassangersCount;
+                _carType = "Automobile";
+                return;
             }
         }
 
@@ -30,7 +45,7 @@ namespace EvrazRacing.ViewModels
             get => _carName;
             set => this.RaiseAndSetIfChanged(ref _carName, value);
         }
-        public string CarSpeed
+        public float CarSpeed
         {
             get => _carSpeed;
             set => this.RaiseAndSetIfChanged(ref _carSpeed, value);

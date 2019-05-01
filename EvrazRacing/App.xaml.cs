@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,6 +14,5 @@ namespace EvrazRacing
     /// </summary>
     public partial class App : Application
     {
-
     }
 }

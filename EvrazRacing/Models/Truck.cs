@@ -8,7 +8,7 @@ namespace EvrazRacing.Models
 {
     class Truck : Car
     {
-        private float Weight;
+        public float Weight;
 
         public Truck(string name, float speed, uint breakChance, uint repairTime, float weight) : base(name, speed, breakChance, repairTime)
         {

@@ -9,12 +9,15 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="VisibleIfTrueConverter" />
     </Window.Resources>
-    <Grid>
+    <Grid Margin="5,5,0,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" MinWidth="150" />
+            <ColumnDefinition Width="Auto" MinWidth="150" />
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="0">
+            <TextBlock Text="Длинна трассы"/>
+            <TextBox Text="{Binding Name}"/>
+            <Separator Margin="0,5"/>
             <TextBlock Text="Название машины"/>
             <TextBox Text="{Binding CarName}"/>
             <TextBlock Text="Скорость"/>
@@ -28,7 +31,7 @@
             <RadioButton IsChecked="{Binding IsAutomobile}"  Content="Легковой"/>
             <Border Visibility="{Binding CarWeightPassangerVisibility, Converter={StaticResource VisibleIfTrueConverter}}">
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Name="gest" Text="Особое значение"/>
+                    <TextBlock Name="gest" Text="{Binding Gesture}"/>
                     <TextBox Text="{Binding CarWeightPassanger}"/>
                 </StackPanel>
             </Border>
@@ -36,8 +39,15 @@
             <Button IsEnabled="{Binding AddAvaible}" Command="{Binding AddCar}" Content="Добавить Машину" Margin="0,10,0,0"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Column="1"  Grid.Row="0">
-            <TextBlock Text="Длинна трассы"/>
-            <TextBox Text="{Binding Name}"/>
+            <ListView ItemsSource="{Binding CarList}" MinHeight="150">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn DisplayMemberBinding="{Binding CarName}">Имя</GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding CarSpeed}" Width="100">Скорость</GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding CarType}">Тип</GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </StackPanel>
     </Grid>
 </Window>
