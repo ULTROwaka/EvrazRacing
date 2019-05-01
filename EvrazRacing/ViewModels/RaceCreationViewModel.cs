@@ -14,8 +14,7 @@ namespace EvrazRacing.ViewModels
 {
     class RaceCreationViewModel : ReactiveObject
     {
-        private Track _track;
-
+        #region new car
         string _carName;
         public string CarName
         {
@@ -76,6 +75,27 @@ namespace EvrazRacing.ViewModels
             get => _carPassanger;
             set => this.RaiseAndSetIfChanged(ref _carPassanger, value);
         }
+
+        readonly ObservableAsPropertyHelper<bool> _gestureVisibility;
+        public bool GestureVisibility => _gestureVisibility.Value;
+
+        readonly ObservableAsPropertyHelper<string> _gesture;
+        public string Gesture => _gesture.Value;
+
+        readonly ObservableAsPropertyHelper<bool> _carWeightVisibility;
+        public bool CarWeightVisibility => _carWeightVisibility.Value;
+
+        readonly ObservableAsPropertyHelper<bool> _carPassangerVisibility;
+        public bool CarPassangerVisibility => _carPassangerVisibility.Value;
+
+        readonly ObservableAsPropertyHelper<bool> _sidecarVisibility;
+        public bool SidecarVisibility => _sidecarVisibility.Value;
+
+        readonly ObservableAsPropertyHelper<bool> _addNewCarAvailability;
+        public bool AddNewCarAvailability => _addNewCarAvailability.Value;
+        #endregion
+
+        #region track
         uint _trackDistance;
         public uint TrackDistance
         {
@@ -88,15 +108,7 @@ namespace EvrazRacing.ViewModels
             get => _trackInterval;
             set => this.RaiseAndSetIfChanged(ref _trackInterval, value);
         }
-
-        readonly ObservableAsPropertyHelper<string> _gesture;
-        public string Gesture => _gesture.Value;
-
-        readonly ObservableAsPropertyHelper<bool> _carWeightPassangerVisibility;
-        public bool CarWeightPassangerVisibility => _carWeightPassangerVisibility.Value;
-
-        readonly ObservableAsPropertyHelper<bool> _sidecarVisibility;
-        public bool SidecarVisibility => _sidecarVisibility.Value;
+        #endregion
 
         private SourceList<CarViewModel> _carList;
         private ReadOnlyObservableCollection<CarViewModel> carList;
@@ -106,36 +118,47 @@ namespace EvrazRacing.ViewModels
             set => carList = value;
         }
 
+        #region commands
         public ReactiveCommand<Unit, Unit> AddCar { get; }
-        
+        #endregion
+
         public RaceCreationViewModel()
         {         
             _isTruck = true;
-            _track = new Track();
+  
             _carList = new SourceList<CarViewModel>();
-
-             _carList
+            _carList
                 .Connect()
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(out carList)          
                 .Subscribe();
 
+            _addNewCarAvailability = this
+                .WhenAnyValue(v => v.CarName)
+                .Select(s => s != null && !s.Trim().Equals(string.Empty))
+                .ToProperty(this, x => x.AddNewCarAvailability);
+
             _sidecarVisibility = this
                 .WhenAnyValue(v => v.IsMotorcycle)
                 .ToProperty(this, x => x.SidecarVisibility);
 
-            _carWeightPassangerVisibility = this
-                .WhenAnyValue(v => v.IsTruck, v => v.IsAutomobile)
-                .Select(s => s.Item1 || s.Item2)
-                .ToProperty(this, x => x.CarWeightPassangerVisibility);
+            _carWeightVisibility = this
+                .WhenAnyValue(v => v.IsTruck)
+                .ToProperty(this, x => x.CarWeightVisibility);
+
+            _carPassangerVisibility = this
+                .WhenAnyValue(v => v.IsAutomobile)
+                .ToProperty(this, x => x.CarPassangerVisibility);
+
+            _gestureVisibility = this
+                .WhenAnyValue(v => v.IsMotorcycle)
+                .Select(s => !s)
+                .ToProperty(this, x => x.GestureVisibility);
 
             _gesture = this
-                .WhenAnyValue(v => v.IsTruck, v => v.IsAutomobile)
+                .WhenAnyValue(v => v.IsTruck, v => v.IsAutomobile, v => v.IsMotorcycle)
                 .Select(s => s.Item1?"Вес грузовика":"Кол-во пассажиров")
                 .ToProperty(this, x => x.Gesture);
-
-            var newcar1 = new Truck("q", 5, 4, 3, 2);
-            _carList.Add(new CarViewModel(newcar1));
 
             AddCar = ReactiveCommand.CreateFromObservable(AddCarObs);
         }

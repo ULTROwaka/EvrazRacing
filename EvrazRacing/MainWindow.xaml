@@ -16,7 +16,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="0">
             <TextBlock Text="Длинна трассы"/>
-            <TextBox Text="{Binding Name}"/>
+            <TextBox Text=""/>
             <Separator Margin="0,5"/>
             <TextBlock Text="Название машины"/>
             <TextBox Text="{Binding CarName}"/>
@@ -29,14 +29,11 @@
             <RadioButton IsChecked="{Binding IsTruck}" Content="Грузовик"/>
             <RadioButton IsChecked="{Binding IsMotorcycle}"  Content="Мотоцикл"/>
             <RadioButton IsChecked="{Binding IsAutomobile}"  Content="Легковой"/>
-            <Border Visibility="{Binding CarWeightPassangerVisibility, Converter={StaticResource VisibleIfTrueConverter}}">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Name="gest" Text="{Binding Gesture}"/>
-                    <TextBox Text="{Binding CarWeightPassanger}"/>
-                </StackPanel>
-            </Border>
+            <TextBlock Name="gest" Text="{Binding Gesture}" Visibility="{Binding CarWeightVisibility,  Converter={StaticResource VisibleIfTrueConverter}}" />
+            <TextBox Text="{Binding CarWeight}" Visibility="{Binding CarWeightVisibility,  Converter={StaticResource VisibleIfTrueConverter}}"/>
+            <TextBox Text="{Binding CarPassanger}" Visibility="{Binding CarPassangerVisibility,  Converter={StaticResource VisibleIfTrueConverter}}"/>
             <CheckBox IsChecked="{Binding Sidecar}" Visibility="{Binding SidecarVisibility, Converter={StaticResource VisibleIfTrueConverter}}" Content="Коляска"/>
-            <Button IsEnabled="{Binding AddAvaible}" Command="{Binding AddCar}" Content="Добавить Машину" Margin="0,10,0,0"/>
+            <Button IsEnabled="{Binding AddNewCarAvailability}" Command="{Binding AddCar}" Content="Добавить Машину" Margin="0,10,0,0"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Column="1"  Grid.Row="0">
             <ListView ItemsSource="{Binding CarList}" MinHeight="150">

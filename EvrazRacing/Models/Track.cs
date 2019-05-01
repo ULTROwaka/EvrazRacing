@@ -53,6 +53,7 @@ namespace EvrazRacing.Models
             _interval = 1000;
             _finishedCarsCount = 0;
             _isStarted = false;
+            _isFinished = false;
             CarsOnTrack = new List<Car>();
             LeaderBoard = new List<Car>();
         }
