@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -12,7 +13,7 @@ using ReactiveUI;
 
 namespace EvrazRacing.ViewModels
 {
-    class RaceCreationViewModel : ReactiveObject
+    class RaceViewModel : ReactiveObject
     {
         #region new car
         string _carName;
@@ -96,6 +97,7 @@ namespace EvrazRacing.ViewModels
         #endregion
 
         #region track
+        Track _track;
         uint _trackDistance;
         public uint TrackDistance
         {
@@ -110,28 +112,38 @@ namespace EvrazRacing.ViewModels
         }
         #endregion
 
-        private SourceList<CarViewModel> _carList;
-        private ReadOnlyObservableCollection<CarViewModel> carList;
+        private SourceList<CarViewModel> carList;
+        private ReadOnlyObservableCollection<CarViewModel> _carList;
         public ReadOnlyObservableCollection<CarViewModel> CarList
         {
-            get => carList;
-            set => carList = value;
+            get => _carList;
+            set => _carList = value;
+        }
+        private SourceList<CarViewModel> leaderboard;
+        private ReadOnlyObservableCollection<CarViewModel> _leaderboard;
+        public ReadOnlyObservableCollection<CarViewModel> Leaderboard
+        {
+            get => _leaderboard;
+            set => _leaderboard = value;
         }
 
         #region commands
-        public ReactiveCommand<Unit, Unit> AddCar { get; }
+        public ReactiveCommand<Unit, Unit> Add { get; }
+        public ReactiveCommand<Unit, Unit> Start { get; }
         #endregion
 
-        public RaceCreationViewModel()
-        {         
+        public RaceViewModel()
+        {
+            _track = new Track();
             _isTruck = true;
-  
-            _carList = new SourceList<CarViewModel>();
-            _carList
+            carList = new SourceList<CarViewModel>();
+            carList
                 .Connect()
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Bind(out carList)          
+                .Bind(out _carList)          
                 .Subscribe();
+
+            leaderboard = new SourceList<CarViewModel>();
 
             _addNewCarAvailability = this
                 .WhenAnyValue(v => v.CarName)
@@ -160,16 +172,56 @@ namespace EvrazRacing.ViewModels
                 .Select(s => s.Item1?"Вес грузовика":"Кол-во пассажиров")
                 .ToProperty(this, x => x.Gesture);
 
-            AddCar = ReactiveCommand.CreateFromObservable(AddCarObs);
+            _track.Leaderboard
+                  .Connect()
+                  .ObserveOn(RxApp.MainThreadScheduler)
+                  .Transform(s => new CarViewModel(s))
+                  .Bind(out _leaderboard)
+                  .Subscribe(_ => Debug.Print($"woop"));
+
+            Add = ReactiveCommand.CreateFromObservable(AddCar);
+            Start = ReactiveCommand.CreateFromObservable(StartRace);
         }
 
-        public IObservable<Unit> AddCarObs()
+        public IObservable<Unit> AddCar()
         {
             return Observable.Start(() =>
              {
-                 var newcar = new Truck(_carName, _carSpeed, _breakChance, _repairTime, _carWeight);
-                 _carList.Add(new CarViewModel(newcar));
+                 if (_isTruck)
+                 {
+                     var newcar = new Truck(_carName, _carSpeed, _breakChance, _repairTime, _carWeight);
+                     carList.Add(new CarViewModel(newcar));
+                     return;
+                 }
+                 if (_isMotorcycle)
+                 {
+                     var newcar = new Motorcycle(_carName, _carSpeed, _breakChance, _repairTime, _sidecar);
+                     carList.Add(new CarViewModel(newcar));
+                     return;
+                 }
+                 if (_isAutomobile)
+                 {
+                     var newcar = new Automobile(_carName, _carSpeed, _breakChance, _repairTime, _carPassanger);
+                     carList.Add(new CarViewModel(newcar));
+                     return;
+                 }
+                 
+                 
              });
+        }
+
+        public IObservable<Unit> StartRace()
+        {
+            return Observable.Start(() =>
+            {
+                _track.Distance = _trackDistance;
+                _track.Interval = _trackInterval;
+                foreach (var car in _carList)
+                {
+                    _track.AddCar(car.ExtractModel());
+                }
+                _track.Start();
+            });
         }
     }
 }

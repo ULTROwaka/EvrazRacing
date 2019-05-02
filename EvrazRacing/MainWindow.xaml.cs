@@ -28,7 +28,7 @@ namespace EvrazRacing
             InitializeComponent();
             RxApp.MainThreadScheduler = DispatcherScheduler.Current;
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            this.DataContext = new RaceCreationViewModel();
+            this.DataContext = new RaceViewModel();
         }
     }
 }

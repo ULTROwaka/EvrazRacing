@@ -9,7 +9,7 @@ namespace EvrazRacing.Models
     class Automobile : Car
     {
         public uint PassangersCount;
-        protected Automobile(string name, float speed, uint breakChance, uint repairTime, uint passangersCount) : base(name, speed, breakChance, repairTime)
+        public Automobile(string name, float speed, uint breakChance, uint repairTime, uint passangersCount) : base(name, speed, breakChance, repairTime)
         {
             PassangersCount = passangersCount;
         }
@@ -27,7 +27,7 @@ namespace EvrazRacing.Models
                 if (OnPitstopTime < 0)
                 {
                     IsOnPitstop = false;
-                    OnPitstopTime = RepairTime;
+                    OnPitstopTime = (int)RepairTime;
                 }
                 else
                 {
@@ -35,8 +35,8 @@ namespace EvrazRacing.Models
                 }
             }
 
-            int breaking = rand.Next((int)BreakChance);
-            if (breaking == BreakChance / 2)
+            int breaking = rand.Next(100);
+            if (breaking >=  BreakChance)
             {
                 IsOnPitstop = true;
                 OnBreaking(this, new EventArgs());

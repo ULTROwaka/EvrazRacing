@@ -32,7 +32,7 @@ namespace EvrazRacing.Models
                 if (OnPitstopTime < 0)
                 {
                     IsOnPitstop = false;
-                    OnPitstopTime = RepairTime;
+                    OnPitstopTime = (int)RepairTime;
                 }
                 else
                 {
@@ -40,7 +40,7 @@ namespace EvrazRacing.Models
                 }
             }
 
-            int breaking = rand.Next((int)BreakChance);
+            int breaking = rand.Next(100);
             if (breaking == BreakChance/2)
             {
                 IsOnPitstop = true;

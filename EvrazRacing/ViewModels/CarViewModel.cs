@@ -1,4 +1,5 @@
-﻿using EvrazRacing.Models;
+﻿using System;
+using EvrazRacing.Models;
 using ReactiveUI;
 namespace EvrazRacing.ViewModels
 {
@@ -59,6 +60,11 @@ namespace EvrazRacing.ViewModels
         {
             get => _carType;
             set => this.RaiseAndSetIfChanged(ref _carType, value);
+        }
+
+        internal Car ExtractModel()
+        {
+            return _carModel;
         }
     }
 }

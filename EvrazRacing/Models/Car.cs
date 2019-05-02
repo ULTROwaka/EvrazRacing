@@ -45,8 +45,8 @@ namespace EvrazRacing.Models
             set => this.RaiseAndSetIfChanged(ref _isOnPitstop, value);
         }
 
-        private uint _onPitstopTime;
-        public uint OnPitstopTime
+        private int _onPitstopTime;
+        public int OnPitstopTime
         {
             get => _onPitstopTime;
             set => this.RaiseAndSetIfChanged(ref _onPitstopTime, value);
