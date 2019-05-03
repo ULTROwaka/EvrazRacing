@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DynamicData;
+using EvrazRacing.Models;
+using ReactiveUI;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DynamicData;
-using EvrazRacing.Models;
-using ReactiveUI;
 
 namespace EvrazRacing.ViewModels
 {
@@ -39,7 +36,7 @@ namespace EvrazRacing.ViewModels
         {
             get => _breakChance;
             set => this.RaiseAndSetIfChanged(ref _breakChance, value);
-        }   
+        }
         bool _isTruck;
         public bool IsTruck
         {
@@ -117,15 +114,17 @@ namespace EvrazRacing.ViewModels
         public ReadOnlyObservableCollection<CarViewModel> CarList
         {
             get => _carList;
-            set => _carList = value;
+            set => this.RaiseAndSetIfChanged(ref _carList, value);
         }
-        private SourceList<CarViewModel> leaderboard;
+
         private ReadOnlyObservableCollection<CarViewModel> _leaderboard;
         public ReadOnlyObservableCollection<CarViewModel> Leaderboard
         {
             get => _leaderboard;
-            set => _leaderboard = value;
+            set => this.RaiseAndSetIfChanged(ref _leaderboard, value);
         }
+
+        private IObservable<bool> _startCanExecute;
 
         #region commands
         public ReactiveCommand<Unit, Unit> Add { get; }
@@ -140,10 +139,8 @@ namespace EvrazRacing.ViewModels
             carList
                 .Connect()
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Bind(out _carList)          
+                .Bind(out _carList)
                 .Subscribe();
-
-            leaderboard = new SourceList<CarViewModel>();
 
             _addNewCarAvailability = this
                 .WhenAnyValue(v => v.CarName)
@@ -169,7 +166,7 @@ namespace EvrazRacing.ViewModels
 
             _gesture = this
                 .WhenAnyValue(v => v.IsTruck, v => v.IsAutomobile, v => v.IsMotorcycle)
-                .Select(s => s.Item1?"Вес грузовика":"Кол-во пассажиров")
+                .Select(s => s.Item1 ? "Вес грузовика" : "Кол-во пассажиров")
                 .ToProperty(this, x => x.Gesture);
 
             _track.Leaderboard
@@ -177,36 +174,36 @@ namespace EvrazRacing.ViewModels
                   .ObserveOn(RxApp.MainThreadScheduler)
                   .Transform(s => new CarViewModel(s))
                   .Bind(out _leaderboard)
-                  .Subscribe(_ => Debug.Print($"woop"));
+                  .Subscribe();
+
 
             Add = ReactiveCommand.CreateFromObservable(AddCar);
-            Start = ReactiveCommand.CreateFromObservable(StartRace);
+
+            _startCanExecute = this
+                .WhenAnyValue(v => v.TrackDistance, v => v.TrackInterval, v => v.CarList.Count,
+                (distance, interval, carlist) => distance > 0 && interval > 0 && carList.Count > 0);
+            Start = ReactiveCommand.CreateFromObservable(StartRace, _startCanExecute);
         }
 
         public IObservable<Unit> AddCar()
         {
             return Observable.Start(() =>
              {
+                 Car newcar;
                  if (_isTruck)
                  {
-                     var newcar = new Truck(_carName, _carSpeed, _breakChance, _repairTime, _carWeight);
-                     carList.Add(new CarViewModel(newcar));
-                     return;
+                      newcar = new Truck(_carName, _carSpeed, _breakChance, _repairTime, _carWeight);
                  }
-                 if (_isMotorcycle)
+                 else if (_isMotorcycle)
                  {
-                     var newcar = new Motorcycle(_carName, _carSpeed, _breakChance, _repairTime, _sidecar);
-                     carList.Add(new CarViewModel(newcar));
-                     return;
-                 }
-                 if (_isAutomobile)
+                      newcar = new Motorcycle(_carName, _carSpeed, _breakChance, _repairTime, _sidecar);
+
+                 } else
                  {
-                     var newcar = new Automobile(_carName, _carSpeed, _breakChance, _repairTime, _carPassanger);
-                     carList.Add(new CarViewModel(newcar));
-                     return;
+                      newcar = new Automobile(_carName, _carSpeed, _breakChance, _repairTime, _carPassanger);
                  }
-                 
-                 
+                 carList.Add(new CarViewModel(newcar));
+                 return;
              });
         }
 

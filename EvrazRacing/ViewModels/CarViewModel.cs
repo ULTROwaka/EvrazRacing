@@ -1,5 +1,4 @@
-﻿using System;
-using EvrazRacing.Models;
+﻿using EvrazRacing.Models;
 using ReactiveUI;
 namespace EvrazRacing.ViewModels
 {
@@ -10,9 +9,8 @@ namespace EvrazRacing.ViewModels
         private float _carSpeed;
         private uint _repairTime;
         private string _carType;
-        private float _weight;
-        private uint _passangerCount;
-        private bool _sidecar;
+        private string _special;
+        private float _carPassed;
 
         public CarViewModel(Car car)
         {
@@ -20,22 +18,23 @@ namespace EvrazRacing.ViewModels
             _carName = _carModel.Name;
             _carSpeed = _carModel.Speed;
             _repairTime = _carModel.RepairTime;
-            
+            _carPassed = _carModel.Passed;
+
             if (_carModel is Truck)
             {
-                _weight = (_carModel as Truck).Weight;
+                Special = (_carModel as Truck).Weight.ToString();
                 _carType = "Truck";
                 return;
             }
             if (_carModel is Motorcycle)
             {
-                _sidecar = (_carModel as Motorcycle).Sidecar;
+                Special = (_carModel as Motorcycle).Sidecar.ToString();
                 _carType = "Motorcycle";
                 return;
             }
             if (_carModel is Automobile)
             {
-                _passangerCount = (_carModel as Automobile).PassangersCount;
+                Special = (_carModel as Automobile).PassangersCount.ToString();
                 _carType = "Automobile";
                 return;
             }
@@ -60,6 +59,16 @@ namespace EvrazRacing.ViewModels
         {
             get => _carType;
             set => this.RaiseAndSetIfChanged(ref _carType, value);
+        }
+        public float CarPassed
+        {
+            get => _carPassed;
+            set => this.RaiseAndSetIfChanged(ref _carPassed, value);
+        }
+        public string Special
+        {
+            get => _special;
+            set => this.RaiseAndSetIfChanged(ref _special, value);
         }
 
         internal Car ExtractModel()

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ReactiveUI;
+﻿using ReactiveUI;
+using System;
 
 namespace EvrazRacing.Models
 {
@@ -66,6 +62,9 @@ namespace EvrazRacing.Models
             set => this.RaiseAndSetIfChanged(ref _isOnFinish, value);
         }
 
+        public virtual event EventHandler OnBreaking;
+        public abstract string StartMessage();
+
         protected Car(string name, float speed, uint breakChance, uint repairTime)
         {
             Name = name;
@@ -80,8 +79,32 @@ namespace EvrazRacing.Models
             rand = new Random();
         }
 
-        public abstract void Update(float delta);
-        public abstract string StartMessage();
-        public abstract event EventHandler OnBreaking;
+        public virtual void Update(float delta)
+        {
+            if (IsOnPitstop)
+            {
+                OnPitstopTime--;
+                if (OnPitstopTime < 0)
+                {
+                    IsOnPitstop = false;
+                    OnPitstopTime = (int)RepairTime;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            int breaking = rand.Next(100);
+            if (breaking == BreakChance / 2)
+            {
+                IsOnPitstop = true;
+                OnBreaking(this, new EventArgs());
+            }
+
+            Passed += Speed * delta;
+        }
+
+
     }
 }
