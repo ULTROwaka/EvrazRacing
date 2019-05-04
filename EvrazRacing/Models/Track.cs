@@ -56,7 +56,7 @@ namespace EvrazRacing.Models
                         FinishedCarsCount++;
                         car.IsOnFinish = true;
                         Debug.Print($"{car.Name} on finish");
-                        Leaderboard.Add(car);
+                        
                     }
                 }
                 Debug.Print("race tick");
@@ -68,6 +68,10 @@ namespace EvrazRacing.Models
             if (IsStarted) return;
             Debug.Print("race start");
             Leaderboard.Clear();
+            foreach (var car in CarsOnTrack)
+            {
+                Leaderboard.Add(car);
+            }
             RaceTimer = new Timer(Interval);
             RaceTimer.Elapsed += new ElapsedEventHandler(RaceTimerTick);
             IsStarted = true;

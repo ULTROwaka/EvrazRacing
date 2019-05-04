@@ -1,24 +1,26 @@
 ﻿using EvrazRacing.Models;
 using ReactiveUI;
+using System;
+
 namespace EvrazRacing.ViewModels
 {
     internal class CarViewModel : ReactiveObject
     {
-        private Car _carModel;
-        private string _carName;
-        private float _carSpeed;
-        private uint _repairTime;
-        private string _carType;
-        private string _special;
-        private float _carPassed;
+        public readonly Car _carModel;
+ 
+
 
         public CarViewModel(Car car)
         {
             _carModel = car;
-            _carName = _carModel.Name;
-            _carSpeed = _carModel.Speed;
-            _repairTime = _carModel.RepairTime;
-            _carPassed = _carModel.Passed;
+            CarName = _carModel.Name;
+            CarSpeed = _carModel.Speed;
+            RepairTime = _carModel.RepairTime;
+            _carPassed = _carModel
+                .WhenAnyValue(x => x.Passed)
+                .ToProperty(this, p => p.CarPassed);
+
+               
 
             if (_carModel is Truck)
             {
@@ -40,31 +42,42 @@ namespace EvrazRacing.ViewModels
             }
         }
 
+        
+       
+        
+        
+        private ObservableAsPropertyHelper<float> _carPassed;
+
+        private string _carName;
         public string CarName
         {
             get => _carName;
             set => this.RaiseAndSetIfChanged(ref _carName, value);
         }
+
+        private float _carSpeed;
         public float CarSpeed
         {
             get => _carSpeed;
             set => this.RaiseAndSetIfChanged(ref _carSpeed, value);
         }
+
+        private uint _repairTime;
         public uint RepairTime
         {
             get => _repairTime;
             set => this.RaiseAndSetIfChanged(ref _repairTime, value);
         }
+
+        private string _carType;
         public string CarType
         {
             get => _carType;
             set => this.RaiseAndSetIfChanged(ref _carType, value);
         }
-        public float CarPassed
-        {
-            get => _carPassed;
-            set => this.RaiseAndSetIfChanged(ref _carPassed, value);
-        }
+        public float CarPassed => _carPassed.Value;
+
+        private string _special;
         public string Special
         {
             get => _special;

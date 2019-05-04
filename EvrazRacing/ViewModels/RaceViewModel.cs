@@ -171,6 +171,7 @@ namespace EvrazRacing.ViewModels
 
             _track.Leaderboard
                   .Connect()
+                  .AutoRefresh(r => r.Passed)
                   .ObserveOn(RxApp.MainThreadScheduler)
                   .Transform(s => new CarViewModel(s))
                   .Bind(out _leaderboard)

@@ -16,11 +16,6 @@
             <ColumnDefinition Width="Auto" MinWidth="150" />
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="0">
-            <TextBlock Text="Длинна трассы"/>
-            <TextBox Text="{Binding TrackDistance}"/>
-            <TextBlock Text="Интервал"/>
-            <TextBox Text="{Binding TrackInterval}"/>
-            <Separator Margin="0,5"/>
             <TextBlock Text="Название машины"/>
             <TextBox Text="{Binding CarName}"/>
             <TextBlock Text="Скорость"/>
@@ -39,12 +34,18 @@
             <Button IsEnabled="{Binding AddNewCarAvailability}" Command="{Binding Add}" Content="Добавить Машину" Margin="0,10,0,0"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Column="1"  Grid.Row="0" Margin="5,0,0,0">
-            <ListView ItemsSource="{Binding CarList}" MinHeight="150">
+            <TextBlock Text="Длинна трассы"/>
+            <TextBox Text="{Binding TrackDistance}"/>
+            <TextBlock Text="Интервал"/>
+            <TextBox Text="{Binding TrackInterval}"/>
+            <TextBlock Text="Участники"/>
+            <ListView ItemsSource="{Binding CarList}" MinHeight="150" Margin="0,2,0,0">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding CarName}">Имя</GridViewColumn>
                         <GridViewColumn DisplayMemberBinding="{Binding CarSpeed}" Width="100">Скорость</GridViewColumn>
                         <GridViewColumn DisplayMemberBinding="{Binding CarType}">Тип</GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Special}">Особенность</GridViewColumn>
                     </GridView>
                 </ListView.View>
             </ListView>
@@ -52,7 +53,8 @@
         </StackPanel>
 
         <StackPanel Orientation="Vertical" Grid.Column="2"  Grid.Row="0" Margin="5,0,0,0">
-            <ListView ItemsSource="{Binding Leaderboard}" MinHeight="150" Width="auto">
+            <TextBlock Text="Табло гонки"/>
+            <ListView ItemsSource="{Binding Leaderboard}" MinHeight="150" Width="auto" Margin="0,2,0,0">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding CarName}" Width="auto">Имя</GridViewColumn>
