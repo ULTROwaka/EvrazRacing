@@ -12,6 +12,7 @@ namespace EvrazRacing.Models
 
         public readonly List<Car> CarsOnTrack;
         public readonly SourceList<Car> Leaderboard;
+        public readonly SourceList<string> EventLog;
         private Timer RaceTimer;
 
         public float Delta
@@ -32,6 +33,7 @@ namespace EvrazRacing.Models
             IsFinished = false;
             CarsOnTrack = new List<Car>();
             Leaderboard = new SourceList<Car>();
+            EventLog = new SourceList<string>();
         }
 
         private void RaceTimerTick(Object source, ElapsedEventArgs e)
@@ -55,8 +57,9 @@ namespace EvrazRacing.Models
                     {
                         FinishedCarsCount++;
                         car.IsOnFinish = true;
+                        car.Passed = Distance;
                         Debug.Print($"{car.Name} on finish");
-                        
+                        EventLog.Add($"{car.Name} on finish");
                     }
                 }
                 Debug.Print("race tick");
@@ -68,6 +71,7 @@ namespace EvrazRacing.Models
             if (IsStarted) return;
             Debug.Print("race start");
             Leaderboard.Clear();
+            EventLog.Clear();
             foreach (var car in CarsOnTrack)
             {
                 Leaderboard.Add(car);
@@ -88,6 +92,7 @@ namespace EvrazRacing.Models
         private void Car_OnBreaking(object sender, EventArgs e)
         {
             Debug.Print($"{(sender as Car).Name} OnPitStop");
+            EventLog.Add($"{(sender as Car).Name} OnPitStop");
         }
     }
 }

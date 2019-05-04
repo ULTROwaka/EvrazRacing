@@ -1,4 +1,5 @@
 ﻿using DynamicData;
+using DynamicData.Binding;
 using EvrazRacing.Models;
 using ReactiveUI;
 using System;
@@ -170,10 +171,11 @@ namespace EvrazRacing.ViewModels
                 .ToProperty(this, x => x.Gesture);
 
             _track.Leaderboard
-                  .Connect()
+                  .Connect()         
                   .AutoRefresh(r => r.Passed)
                   .ObserveOn(RxApp.MainThreadScheduler)
-                  .Transform(s => new CarViewModel(s))
+                  .Sort(SortExpressionComparer<Car>.Descending(t => t.Passed))
+                  .Transform(s => new CarViewModel(s))                 
                   .Bind(out _leaderboard)
                   .Subscribe();
 
