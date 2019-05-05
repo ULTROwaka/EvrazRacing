@@ -42,6 +42,7 @@ namespace EvrazRacing.Models
             if (FinishedCarsCount >= CarsOnTrack.Count)
             {
                 RaceTimer.Enabled = false;
+                IsStarted = false;
                 Debug.Print("race end");
             }
         }
@@ -70,8 +71,6 @@ namespace EvrazRacing.Models
         {
             if (IsStarted) return;
             Debug.Print("race start");
-            Leaderboard.Clear();
-            EventLog.Clear();
             foreach (var car in CarsOnTrack)
             {
                 Leaderboard.Add(car);
@@ -80,6 +79,19 @@ namespace EvrazRacing.Models
             RaceTimer.Elapsed += new ElapsedEventHandler(RaceTimerTick);
             IsStarted = true;
             RaceTimer.Enabled = true;
+        }
+
+        public void Restart()
+        {
+            if (IsStarted) return;
+            Leaderboard.Clear();
+            EventLog.Clear();
+            FinishedCarsCount = 0;
+            foreach (var car in CarsOnTrack)
+            {
+                car.SetOnStart();
+            }
+            Start();
         }
 
         public void AddCar(Car car)

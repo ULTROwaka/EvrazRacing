@@ -96,7 +96,7 @@ namespace EvrazRacing.Models
             }
 
             int breaking = rand.Next(100);
-            if (breaking < BreakChance / 2)
+            if (breaking < BreakChance)
             {
                 IsOnPitstop = true;
                 OnBreaking(this, new EventArgs());
@@ -105,6 +105,10 @@ namespace EvrazRacing.Models
             Passed += Speed * delta;
         }
 
-
+        public virtual void SetOnStart()
+        {
+            Passed = 0;
+            IsOnFinish = false;
+        }
     }
 }

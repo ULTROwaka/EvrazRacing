@@ -90,8 +90,6 @@ namespace EvrazRacing.ViewModels
         readonly ObservableAsPropertyHelper<bool> _sidecarVisibility;
         public bool SidecarVisibility => _sidecarVisibility.Value;
 
-        readonly ObservableAsPropertyHelper<bool> _addNewCarAvailability;
-        public bool AddNewCarAvailability => _addNewCarAvailability.Value;
         #endregion
 
         #region track
@@ -118,6 +116,13 @@ namespace EvrazRacing.ViewModels
             set => this.RaiseAndSetIfChanged(ref _carList, value);
         }
 
+        private CarViewModel _selectdCar;
+        public CarViewModel SelectedCar
+        {
+            get => _selectdCar;
+            set => this.RaiseAndSetIfChanged(ref _selectdCar, value);
+        }
+
         private ReadOnlyObservableCollection<CarViewModel> _leaderboard;
         public ReadOnlyObservableCollection<CarViewModel> Leaderboard
         {
@@ -125,11 +130,25 @@ namespace EvrazRacing.ViewModels
             set => this.RaiseAndSetIfChanged(ref _leaderboard, value);
         }
 
-        private IObservable<bool> _startCanExecute;
+
+
 
         #region commands
-        public ReactiveCommand<Unit, Unit> Add { get; }
-        public ReactiveCommand<Unit, Unit> Start { get; }
+        private IObservable<bool> _addCanExecute;
+        public ReactiveCommand<Unit, Unit> Add
+        {
+            get;
+        }
+        private IObservable<bool> _deleteCanExecute;
+        public ReactiveCommand<Unit, Unit> Delete
+        {
+            get;
+        }
+        private IObservable<bool> _startCanExecute;
+        public ReactiveCommand<Unit, Unit> Start
+        {
+            get;
+        }
         #endregion
 
         public RaceViewModel()
@@ -142,11 +161,6 @@ namespace EvrazRacing.ViewModels
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(out _carList)
                 .Subscribe();
-
-            _addNewCarAvailability = this
-                .WhenAnyValue(v => v.CarName)
-                .Select(s => s != null && !s.Trim().Equals(string.Empty))
-                .ToProperty(this, x => x.AddNewCarAvailability);
 
             _sidecarVisibility = this
                 .WhenAnyValue(v => v.IsMotorcycle)
@@ -171,16 +185,23 @@ namespace EvrazRacing.ViewModels
                 .ToProperty(this, x => x.Gesture);
 
             _track.Leaderboard
-                  .Connect()         
+                  .Connect()
                   .AutoRefresh(r => r.Passed)
                   .ObserveOn(RxApp.MainThreadScheduler)
                   .Sort(SortExpressionComparer<Car>.Descending(t => t.Passed))
-                  .Transform(s => new CarViewModel(s))                 
+                  .Transform(s => new CarViewModel(s))
                   .Bind(out _leaderboard)
                   .Subscribe();
 
+            _addCanExecute = this
+                .WhenAnyValue(v => v.CarName, v => v.CarSpeed, v => v.RepairTime, v => v.BreakChance,
+                (name, speed, repairTime, breakchance) => name != null && !name.Trim().Equals(string.Empty) && speed >0 && breakchance <= 100 && breakchance >=0 && repairTime > 0);
+            Add = ReactiveCommand.CreateFromObservable(AddCar, _addCanExecute);
 
-            Add = ReactiveCommand.CreateFromObservable(AddCar);
+            _deleteCanExecute = this
+                .WhenAnyValue(v => v.SelectedCar)
+                .Select(s => s != null);
+            Delete = ReactiveCommand.CreateFromObservable(DeleteCar, _deleteCanExecute);
 
             _startCanExecute = this
                 .WhenAnyValue(v => v.TrackDistance, v => v.TrackInterval, v => v.CarList.Count,
@@ -209,18 +230,28 @@ namespace EvrazRacing.ViewModels
                  return;
              });
         }
+        public IObservable<Unit> DeleteCar()
+        {
+            return Observable.Start(() =>
+            {
+                carList.Remove(_selectdCar);
+            });
+        }
 
         public IObservable<Unit> StartRace()
         {
             return Observable.Start(() =>
-            {
+            {            
                 _track.Distance = _trackDistance;
                 _track.Interval = _trackInterval;
                 foreach (var car in _carList)
                 {
-                    _track.AddCar(car.ExtractModel());
+                    if (!_track.CarsOnTrack.Contains(car.ExtractModel()))
+                    {
+                        _track.AddCar(car.ExtractModel());
+                    }                 
                 }
-                _track.Start();
+                _track.Restart();
             });
         }
     }

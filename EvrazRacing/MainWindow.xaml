@@ -17,13 +17,13 @@
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="0">
             <TextBlock Text="Название машины"/>
-            <TextBox Text="{Binding CarName}"/>
+            <TextBox Text="{Binding CarName,  UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock Text="Скорость"/>
-            <TextBox Text="{Binding CarSpeed}"/>
+            <TextBox Text="{Binding CarSpeed,  UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock Text="Шанс поломки"/>
-            <TextBox Text="{Binding BreakChance}"/>
+            <TextBox Text="{Binding BreakChance,  UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock Text="Время починки"/>
-            <TextBox Text="{Binding RepairTime}"/>
+            <TextBox Text="{Binding RepairTime,  UpdateSourceTrigger=PropertyChanged}"/>
             <RadioButton IsChecked="{Binding IsTruck}" Content="Грузовик"/>
             <RadioButton IsChecked="{Binding IsMotorcycle}"  Content="Мотоцикл"/>
             <RadioButton IsChecked="{Binding IsAutomobile}"  Content="Легковой"/>
@@ -31,15 +31,16 @@
             <TextBox Text="{Binding CarWeight}" Visibility="{Binding CarWeightVisibility,  Converter={StaticResource VisibleIfTrueConverter}}"/>
             <TextBox Text="{Binding CarPassanger}" Visibility="{Binding CarPassangerVisibility,  Converter={StaticResource VisibleIfTrueConverter}}"/>
             <CheckBox IsChecked="{Binding Sidecar}" Visibility="{Binding SidecarVisibility, Converter={StaticResource VisibleIfTrueConverter}}" Content="Коляска"/>
-            <Button IsEnabled="{Binding AddNewCarAvailability}" Command="{Binding Add}" Content="Добавить Машину" Margin="0,10,0,0"/>
+            <Button Command="{Binding Add}" Content="Добавить Машину" Margin="0,10,0,0"/>
+            <Button Command="{Binding Delete}" Content="Удалить Машину" Margin="0,5,0,0"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Column="1"  Grid.Row="0" Margin="5,0,0,0">
             <TextBlock Text="Длинна трассы"/>
-            <TextBox Text="{Binding TrackDistance}"/>
+            <TextBox Text="{Binding TrackDistance,  UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock Text="Интервал"/>
-            <TextBox Text="{Binding TrackInterval}"/>
+            <TextBox Text="{Binding TrackInterval,  UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Text="Участники"/>
-            <ListView ItemsSource="{Binding CarList}" MinHeight="150" Margin="0,2,0,0">
+            <ListView ItemsSource="{Binding CarList}" SelectedItem="{Binding SelectedCar}" SelectionMode="Single" MinHeight="150" Margin="0,2,0,0">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding CarName}">Имя</GridViewColumn>
