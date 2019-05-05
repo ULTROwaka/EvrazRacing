@@ -71,9 +71,11 @@ namespace EvrazRacing.Models
         {
             if (IsStarted) return;
             Debug.Print("race start");
+            EventLog.Add("В гонке участвуют:");
             foreach (var car in CarsOnTrack)
             {
                 Leaderboard.Add(car);
+                EventLog.Add(car.StartMessage);
             }
             RaceTimer = new Timer(Interval);
             RaceTimer.Elapsed += new ElapsedEventHandler(RaceTimerTick);
@@ -104,7 +106,7 @@ namespace EvrazRacing.Models
         private void Car_OnBreaking(object sender, EventArgs e)
         {
             Debug.Print($"{(sender as Car).Name} OnPitStop");
-            EventLog.Add($"{(sender as Car).Name} OnPitStop");
+            EventLog.Add($"{(sender as Car).Name} on pitstop");
         }
     }
 }

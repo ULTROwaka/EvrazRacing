@@ -10,7 +10,7 @@ namespace EvrazRacing.Models
             PassangersCount = passangersCount;
         }
 
-        public override string StartMessage() => $"Automobile {Name}, speed: {Speed}, wheel breaking chance: {BreakChance}" +
+        public override string StartMessage => $"Automobile {Name}, speed: {Speed}, wheel breaking chance: {BreakChance} " +
                                                  $"with {PassangersCount} passangers on start";
     }
 }

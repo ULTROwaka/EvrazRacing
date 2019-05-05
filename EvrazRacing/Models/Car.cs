@@ -63,7 +63,10 @@ namespace EvrazRacing.Models
         }
 
         public virtual event EventHandler OnBreaking;
-        public abstract string StartMessage();
+        public abstract string StartMessage
+        {
+            get;
+        }
 
         protected Car(string name, float speed, uint breakChance, uint repairTime)
         {

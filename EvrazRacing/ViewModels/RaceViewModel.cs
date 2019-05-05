@@ -130,7 +130,12 @@ namespace EvrazRacing.ViewModels
             set => this.RaiseAndSetIfChanged(ref _leaderboard, value);
         }
 
-
+        private ReadOnlyObservableCollection<string> _eventLog;
+        public ReadOnlyObservableCollection<string> EventLog
+        {
+            get => _eventLog;
+            set => this.RaiseAndSetIfChanged(ref _eventLog, value);
+        }
 
 
         #region commands
@@ -191,6 +196,12 @@ namespace EvrazRacing.ViewModels
                   .Sort(SortExpressionComparer<Car>.Descending(t => t.Passed))
                   .Transform(s => new CarViewModel(s))
                   .Bind(out _leaderboard)
+                  .Subscribe();
+
+            _track.EventLog
+                  .Connect()
+                  .ObserveOn(RxApp.MainThreadScheduler)
+                  .Bind(out _eventLog)
                   .Subscribe();
 
             _addCanExecute = this

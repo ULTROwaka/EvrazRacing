@@ -19,7 +19,7 @@ namespace EvrazRacing.Models
             Weight = weight;
         }
 
-        public override string StartMessage() => $"Truck {Name}, speed: {Speed}, wheel breaking chance: {BreakChance}" +
+        public override string StartMessage => $"Truck {Name}, speed: {Speed}, wheel breaking chance: {BreakChance} " +
                                                  $"with weight {Weight} units on start";   
     }
 }

@@ -14,7 +14,7 @@ namespace EvrazRacing.Models
         {
             Sidecar = sidecar;
         }
-        public override string StartMessage() => $"Motorcycle {Name}, speed: {Speed}, wheel breaking chance: {BreakChance}" +
+        public override string StartMessage => $"Motorcycle {Name}, speed: {Speed}, wheel breaking chance: {BreakChance} " +
                                                  $"{(Sidecar?"with":"without" )} sidecar on start";
     }
 }
