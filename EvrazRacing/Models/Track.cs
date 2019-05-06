@@ -77,7 +77,9 @@ namespace EvrazRacing.Models
                         FinishedCarsCount++;
                         car.IsOnFinish = true;
                         car.Passed = Distance;
+#if DEBUG
                         Debug.Print($"{car.Name} on finish");
+#endif
                         EventLog.Add($"{car.Name} on finish");
                     }
                 }
