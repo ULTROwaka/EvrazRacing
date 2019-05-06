@@ -1,7 +1,8 @@
 ﻿using DynamicData;
-using EvrazRacing.ViewModels;
+using DynamicData.Binding;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Timers;
 
@@ -10,7 +11,7 @@ namespace EvrazRacing.Models
     class Track
     {
 
-        public readonly List<Car> CarsOnTrack;
+        public readonly ObservableCollectionExtended<Car> CarsOnTrack;
         public readonly SourceList<Car> Leaderboard;
         public readonly SourceList<string> EventLog;
         private Timer RaceTimer;
@@ -19,11 +20,26 @@ namespace EvrazRacing.Models
         {
             get => (float)Interval / 1000;
         }
-        public bool IsStarted { get; set; }
-        public float Distance { get; set; }
-        public uint Interval { get; set; }
-        public int FinishedCarsCount { get; private set; }
-        public bool IsFinished { get; }
+        public bool IsStarted
+        {
+            get; set;
+        }
+        public float Distance
+        {
+            get; set;
+        }
+        public uint Interval
+        {
+            get; set;
+        }
+        public int FinishedCarsCount
+        {
+            get; private set;
+        }
+        public bool IsFinished
+        {
+            get;
+        }
 
         public Track()
         {
@@ -31,7 +47,7 @@ namespace EvrazRacing.Models
             FinishedCarsCount = 0;
             IsStarted = false;
             IsFinished = false;
-            CarsOnTrack = new List<Car>();
+            CarsOnTrack = new ObservableCollectionExtended<Car>();
             Leaderboard = new SourceList<Car>();
             EventLog = new SourceList<string>();
         }
@@ -69,11 +85,18 @@ namespace EvrazRacing.Models
 
         public void Start()
         {
-            if (IsStarted) return;
+            if (IsStarted)
+            {
+                return;
+            }              
+            Leaderboard.Clear();
+            EventLog.Clear();
+            FinishedCarsCount = 0;
             Debug.Print("race start");
             EventLog.Add("В гонке участвуют:");
             foreach (var car in CarsOnTrack)
             {
+                car.SetOnStart();
                 Leaderboard.Add(car);
                 EventLog.Add(car.StartMessage);
             }
@@ -83,22 +106,12 @@ namespace EvrazRacing.Models
             RaceTimer.Enabled = true;
         }
 
-        public void Restart()
-        {
-            if (IsStarted) return;
-            Leaderboard.Clear();
-            EventLog.Clear();
-            FinishedCarsCount = 0;
-            foreach (var car in CarsOnTrack)
-            {
-                car.SetOnStart();
-            }
-            Start();
-        }
-
         public void AddCar(Car car)
         {
-            if (IsStarted) return;
+            if (IsStarted)
+            {
+                return;
+            }             
             car.OnBreaking += Car_OnBreaking;
             CarsOnTrack.Add(car);
         }
@@ -107,6 +120,16 @@ namespace EvrazRacing.Models
         {
             Debug.Print($"{(sender as Car).Name} OnPitStop");
             EventLog.Add($"{(sender as Car).Name} on pitstop");
+        }
+
+        internal void DeleteCar(Car car)
+        {
+            if (IsStarted)
+            {
+                return;
+            }
+            car.OnBreaking -= Car_OnBreaking;
+            CarsOnTrack.Remove(car);
         }
     }
 }

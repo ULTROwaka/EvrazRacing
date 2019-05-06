@@ -4,7 +4,6 @@ using EvrazRacing.Models;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -20,25 +19,25 @@ namespace EvrazRacing.ViewModels
             get => _carName;
             set => this.RaiseAndSetIfChanged(ref _carName, value);
         }
-        uint _carSpeed;
+        uint _carSpeed = 10;
         public uint CarSpeed
         {
             get => _carSpeed;
             set => this.RaiseAndSetIfChanged(ref _carSpeed, value);
         }
-        uint _repairTime;
+        uint _repairTime = 1;
         public uint RepairTime
         {
             get => _repairTime;
             set => this.RaiseAndSetIfChanged(ref _repairTime, value);
         }
-        uint _breakChance;
+        uint _breakChance = 15;
         public uint BreakChance
         {
             get => _breakChance;
             set => this.RaiseAndSetIfChanged(ref _breakChance, value);
         }
-        bool _isTruck;
+        bool _isTruck = true;
         public bool IsTruck
         {
             get => _isTruck;
@@ -62,13 +61,13 @@ namespace EvrazRacing.ViewModels
             get => _sidecar;
             set => this.RaiseAndSetIfChanged(ref _sidecar, value);
         }
-        float _carWeight;
+        float _carWeight = 5;
         public float CarWeight
         {
             get => _carWeight;
             set => this.RaiseAndSetIfChanged(ref _carWeight, value);
         }
-        uint _carPassanger;
+        uint _carPassanger = 1;
         public uint CarPassanger
         {
             get => _carPassanger;
@@ -159,7 +158,6 @@ namespace EvrazRacing.ViewModels
         public RaceViewModel()
         {
             _track = new Track();
-            _isTruck = true;
             carList = new SourceList<CarViewModel>();
             carList
                 .Connect()
@@ -204,9 +202,16 @@ namespace EvrazRacing.ViewModels
                   .Bind(out _eventLog)
                   .Subscribe();
 
+            _track.CarsOnTrack
+                  .ToObservableChangeSet()     
+                  .Transform(s => new CarViewModel(s))
+                  .ObserveOn(RxApp.MainThreadScheduler)
+                  .Bind(out _carList)
+                  .Subscribe();
+
             _addCanExecute = this
                 .WhenAnyValue(v => v.CarName, v => v.CarSpeed, v => v.RepairTime, v => v.BreakChance,
-                (name, speed, repairTime, breakchance) => name != null && !name.Trim().Equals(string.Empty) && speed >0 && breakchance <= 100 && breakchance >=0 && repairTime > 0);
+                (name, speed, repairTime, breakchance) => name != null && !name.Trim().Equals(string.Empty) && speed > 0 && breakchance <= 100 && breakchance >= 0 && repairTime > 0);
             Add = ReactiveCommand.CreateFromObservable(AddCar, _addCanExecute);
 
             _deleteCanExecute = this
@@ -216,7 +221,7 @@ namespace EvrazRacing.ViewModels
 
             _startCanExecute = this
                 .WhenAnyValue(v => v.TrackDistance, v => v.TrackInterval, v => v.CarList.Count,
-                (distance, interval, carlist) => distance > 0 && interval > 0 && carList.Count > 0);
+                (distance, interval, carcount) => distance > 0 && interval > 0 && carcount > 0);
             Start = ReactiveCommand.CreateFromObservable(StartRace, _startCanExecute);
         }
 
@@ -227,17 +232,18 @@ namespace EvrazRacing.ViewModels
                  Car newcar;
                  if (_isTruck)
                  {
-                      newcar = new Truck(_carName, _carSpeed, _breakChance, _repairTime, _carWeight);
+                     newcar = new Truck(_carName, _carSpeed, _breakChance, _repairTime, _carWeight);
                  }
                  else if (_isMotorcycle)
                  {
-                      newcar = new Motorcycle(_carName, _carSpeed, _breakChance, _repairTime, _sidecar);
+                     newcar = new Motorcycle(_carName, _carSpeed, _breakChance, _repairTime, _sidecar);
 
-                 } else
-                 {
-                      newcar = new Automobile(_carName, _carSpeed, _breakChance, _repairTime, _carPassanger);
                  }
-                 carList.Add(new CarViewModel(newcar));
+                 else
+                 {
+                     newcar = new Automobile(_carName, _carSpeed, _breakChance, _repairTime, _carPassanger);
+                 }
+                 _track.AddCar(newcar);
                  return;
              });
         }
@@ -245,24 +251,17 @@ namespace EvrazRacing.ViewModels
         {
             return Observable.Start(() =>
             {
-                carList.Remove(_selectdCar);
+                _track.DeleteCar(_selectdCar.ExtractModel());
             });
         }
 
         public IObservable<Unit> StartRace()
         {
             return Observable.Start(() =>
-            {            
+            {
                 _track.Distance = _trackDistance;
                 _track.Interval = _trackInterval;
-                foreach (var car in _carList)
-                {
-                    if (!_track.CarsOnTrack.Contains(car.ExtractModel()))
-                    {
-                        _track.AddCar(car.ExtractModel());
-                    }                 
-                }
-                _track.Restart();
+                _track.Start();
             });
         }
     }

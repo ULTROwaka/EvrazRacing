@@ -1,14 +1,11 @@
 ﻿using EvrazRacing.Models;
 using ReactiveUI;
-using System;
 
 namespace EvrazRacing.ViewModels
 {
     internal class CarViewModel : ReactiveObject
     {
         public readonly Car _carModel;
- 
-
 
         public CarViewModel(Car car)
         {
@@ -20,32 +17,28 @@ namespace EvrazRacing.ViewModels
                 .WhenAnyValue(x => x.Passed)
                 .ToProperty(this, p => p.CarPassed);
 
-               
+
 
             if (_carModel is Truck)
             {
-                Special = (_carModel as Truck).Weight.ToString();
+                Special = $"{(_carModel as Truck).Weight} ед.";
                 _carType = "Truck";
                 return;
             }
             if (_carModel is Motorcycle)
             {
-                Special = (_carModel as Motorcycle).Sidecar.ToString();
+                Special = (_carModel as Motorcycle).Sidecar ? "Коляска" : "-";
                 _carType = "Motorcycle";
                 return;
             }
             if (_carModel is Automobile)
             {
-                Special = (_carModel as Automobile).PassangersCount.ToString();
+                Special = $"{(_carModel as Automobile).PassangersCount} пас.";
                 _carType = "Automobile";
                 return;
             }
         }
 
-        
-       
-        
-        
         private ObservableAsPropertyHelper<float> _carPassed;
 
         private string _carName;
