@@ -99,7 +99,7 @@ namespace EvrazRacing.Models
             }
 
             int breaking = rand.Next(100);
-            if (breaking < BreakChance)
+            if (breaking <= BreakChance)
             {
                 IsOnPitstop = true;
                 OnBreaking(this, new EventArgs());

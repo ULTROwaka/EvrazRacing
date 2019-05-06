@@ -59,7 +59,9 @@ namespace EvrazRacing.Models
             {
                 RaceTimer.Enabled = false;
                 IsStarted = false;
+#if DEBUG
                 Debug.Print("race end");
+#endif
             }
         }
 
@@ -79,7 +81,9 @@ namespace EvrazRacing.Models
                         EventLog.Add($"{car.Name} on finish");
                     }
                 }
+#if DEBUG
                 Debug.Print("race tick");
+#endif
             }
         }
 
@@ -92,7 +96,9 @@ namespace EvrazRacing.Models
             Leaderboard.Clear();
             EventLog.Clear();
             FinishedCarsCount = 0;
+#if DEBUG
             Debug.Print("race start");
+#endif
             EventLog.Add("В гонке участвуют:");
             foreach (var car in CarsOnTrack)
             {
@@ -118,7 +124,9 @@ namespace EvrazRacing.Models
 
         private void Car_OnBreaking(object sender, EventArgs e)
         {
+#if DEBUG
             Debug.Print($"{(sender as Car).Name} OnPitStop");
+#endif
             EventLog.Add($"{(sender as Car).Name} on pitstop");
         }
 

@@ -18,9 +18,9 @@
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="0">
             <TextBlock Text="Название машины"/>
             <TextBox Text="{Binding CarName,  UpdateSourceTrigger=PropertyChanged}"/>
-            <TextBlock Text="Скорость"/>
+            <TextBlock Text="Скорость м/с"/>
             <TextBox Text="{Binding CarSpeed,  UpdateSourceTrigger=PropertyChanged}"/>
-            <TextBlock Text="Шанс поломки"/>
+            <TextBlock Text="Шанс поломки %"/>
             <TextBox Text="{Binding BreakChance,  UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock Text="Время починки"/>
             <TextBox Text="{Binding RepairTime,  UpdateSourceTrigger=PropertyChanged}"/>
@@ -35,9 +35,9 @@
             <Button Command="{Binding Delete}" Content="Удалить Машину" Margin="0,5,0,0"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Column="1"  Grid.Row="0" Margin="5,0,0,0">
-            <TextBlock Text="Длинна трассы"/>
+            <TextBlock Text="Длинна трассы м"/>
             <TextBox Text="{Binding TrackDistance,  UpdateSourceTrigger=PropertyChanged}"/>
-            <TextBlock Text="Интервал"/>
+            <TextBlock Text="Интервал обновления мс"/>
             <TextBox Text="{Binding TrackInterval,  UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Text="Участники"/>
             <ListView ItemsSource="{Binding CarList}" SelectedItem="{Binding SelectedCar}" SelectionMode="Single" MinHeight="150" Margin="0,2,0,0">
