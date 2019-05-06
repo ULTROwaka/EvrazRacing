@@ -3,7 +3,7 @@ using System;
 
 namespace EvrazRacing.Models
 {
-    internal abstract class Car : ReactiveObject
+    internal abstract class Car : ReactiveObject, IEquatable<Car>
     {
         protected Random rand;
         private string _name;
@@ -113,5 +113,11 @@ namespace EvrazRacing.Models
             Passed = 0;
             IsOnFinish = false;
         }
+
+        public virtual bool Equals(Car other)
+        {
+            return Name.Equals(other.Name);
+        }
+
     }
 }

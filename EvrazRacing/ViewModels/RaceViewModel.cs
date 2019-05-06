@@ -243,8 +243,14 @@ namespace EvrazRacing.ViewModels
                  {
                      newcar = new Automobile(_carName, _carSpeed, _breakChance, _repairTime, _carPassanger);
                  }
+                 foreach (var car in CarList)
+                 {
+                     if (car.Equals(newcar))
+                     {
+                         return;
+                     }
+                 }
                  _track.AddCar(newcar);
-                 return;
              });
         }
         public IObservable<Unit> DeleteCar()

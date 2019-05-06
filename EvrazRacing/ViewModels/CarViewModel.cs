@@ -1,9 +1,10 @@
 ﻿using EvrazRacing.Models;
 using ReactiveUI;
+using System;
 
 namespace EvrazRacing.ViewModels
 {
-    internal class CarViewModel : ReactiveObject
+    internal class CarViewModel : ReactiveObject, IEquatable<CarViewModel>, IEquatable<Car>
     {
         public readonly Car _carModel;
 
@@ -80,6 +81,16 @@ namespace EvrazRacing.ViewModels
         internal Car ExtractModel()
         {
             return _carModel;
+        }
+
+        public bool Equals(CarViewModel other)
+        {
+            return _carModel.Equals(other.ExtractModel());
+        }
+
+        public bool Equals(Car other)
+        {
+            return _carModel.Equals(other);
         }
     }
 }
